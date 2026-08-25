@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Wedding Face Finder{% endblock %}
+
+{% block content %}
+
+<section class="section" style="padding-top: 120px;">
+  <div class="container">
+    <div class="admin-header">
+      <div>
+        <p class="label" style="margin-bottom: 8px;">Administration</p>
+        <h1 style="margin-bottom: 4px;">Dashboard</h1>
+        <p style="color: var(--text-secondary);">Manage events, monitor usage, and review audit logs.</p>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm">Sign Out</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px;">
+      <div class="admin-card" style="text-align: center;">
+        <div class="stat-value" style="font-size: 2.5rem;">{{ stats.total_events }}</div>
+        <div class="stat-label">Total Events</div>
+      </div>
+      <div class="admin-card" style="text-align: center;">
+        <div class="stat-value" style="font-size: 2.5rem;">{{ stats.total_photos }}</div>
+        <div class="stat-label">Photos Processed</div>
+      </div>
+      <div class="admin-card" style="text-align: center;">
+        <div class="stat-value" style="font-size: 2.5rem;">{{ stats.total_searches }}</div>
+        <div class="stat-label">Searches</div>
+      </div>
+      <div class="admin-card" style="text-align: center;">
+        <div class="stat-value" style="font-size: 2.5rem;">{{ stats.storage_gb }}GB</div>
+        <div class="stat-label">Storage Used</div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-header">
+        <h3>Events</h3>
+        <span class="badge badge-neutral">{{ events|length }} active</span>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Photos</th>
+              <th>Created</th>
+              <th>Last Search</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in events %}
+            <tr>
+              <td>
+                <div style="font-weight: 500;">{{ event.name }}</div>
+                <div class="mono" style="margin-top: 2px;">{{ event.uuid[:8] }}...</div>
+              </td>
+              <td>{{ event.photo_count }}</td>
+              <td>{{ event.created_at.strftime('%Y-%m-%d') }}</td>
+              <td>{{ event.last_search_at.strftime('%Y-%m-%d %H:%M') if event.last_search_at else 'Never' }}</td>
+              <td>
+                {% if event.status == 'active' %}
+                  <span class="badge badge-success">Active</span>
+                {% elif event.status == 'processing' %}
+                  <span class="badge badge-warning">Processing</span>
+                {% else %}
+                  <span class="badge badge-neutral">Archived</span>
+                {% endif %}
+              </td>
+              <td style="text-align: right;">
+                <form method="POST" action="{{ url_for('admin.delete_event', event_id=event.id) }}" style="display: inline;" onsubmit="return confirm('Permanently delete this event and all photos?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--error); border-color: var(--error);">Purge</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-card" style="margin-top: 24px;">
+      <div class="admin-header">
+        <h3>Recent Audit Log</h3>
+        <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-secondary btn-sm">View All</a>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Action</th>
+              <th>IP Address</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in audit_logs[:10] %}
+            <tr>
+              <td class="mono">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>
+                <span class="badge {% if log.action == 'search' %}badge-neutral{% elif log.action == 'upload' %}badge-success{% elif log.action == 'purge' %}badge-error{% else %}badge-neutral{% endif %}">
+                  {{ log.action }}
+                </span>
+              </td>
+              <td class="mono">{{ log.ip_address }}</td>
+              <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ log.details }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

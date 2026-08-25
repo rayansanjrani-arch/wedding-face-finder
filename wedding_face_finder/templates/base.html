@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Wedding Face Finder{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  <nav class="site-nav" id="siteNav">
+    <div class="nav-inner">
+      <a href="{{ url_for('views.index') }}" class="nav-logo">Wedding Face Finder</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('views.index') }}">Home</a></li>
+        <li><a href="{{ url_for('views.upload_page') }}">Upload</a></li>
+        <li><a href="{{ url_for('views.results_page') }}">Search</a></li>
+        <li><a href="{{ url_for('views.admin_login') }}">Admin</a></li>
+        <li><a href="{{ url_for('views.upload_page') }}" class="nav-cta">Get Started</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container" style="padding-top: 100px;">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} fade-in"><span>{{ message }}</span></div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Wedding Face Finder. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Security</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <script>
+    (function() {
+      const nav = document.getElementById('siteNav');
+      if (!nav) return;
+      window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 20);
+      });
+    })();
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

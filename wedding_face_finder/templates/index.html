@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Wedding Face Finder — Find Yourself in Every Moment{% endblock %}
+{% block body_class %}landing{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">Wedding<br>Memories Experts</h1>
+    <p class="hero-subtitle">
+      Upload thousands of event photos. Take one selfie. Find every moment you appeared in — under three seconds.
+    </p>
+    <div class="hero-cta-group">
+      <a href="{{ url_for('views.upload_page') }}" class="btn btn-ghost btn-lg">
+        Start Scanning
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <a href="#how-it-works" class="btn btn-ghost btn-lg" style="background: rgba(255,255,255,0.05);">
+        How it works
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-circle">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+    </div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<section class="section" style="background: var(--bg-secondary);">
+  <div class="container">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value">4,600+</span>
+        <span class="stat-label">Photos processed per event</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">&lt;3s</span>
+        <span class="stat-label">Search response time</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">99.2%</span>
+        <span class="stat-label">Face detection accuracy</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">Zero</span>
+        <span class="stat-label">Photos stored after purge</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how-it-works">
+  <div class="container">
+    <p class="label" style="margin-bottom: 16px;">How It Works</p>
+    <h2 style="margin-bottom: 48px; max-width: 600px;">Three steps between you and every photo you're in.</h2>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-number">01</div>
+        <h3 class="feature-title">Upload Your Event</h3>
+        <p class="feature-desc">
+          Drag and drop an entire wedding gallery. We accept JPEG, PNG, and RAW previews. Our engine processes them in the background with CNN + HOG face detection.
+        </p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-number">02</div>
+        <h3 class="feature-title">Take a Selfie</h3>
+        <p class="feature-desc">
+          Snap a quick photo with your camera or upload one. Our 128-dimension face encoding maps your features in milliseconds. No account needed.
+        </p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-number">03</div>
+        <h3 class="feature-title">Download Matches</h3>
+        <p class="feature-desc">
+          Browse a masonry grid of every match, sorted by confidence. Tap to select, then download as a ZIP. Your photos, your control.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--bg-secondary);">
+  <div class="container">
+    <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+      <p class="label" style="margin-bottom: 16px;">Privacy First</p>
+      <h2 style="margin-bottom: 20px;">Your face. Your data. Your control.</h2>
+      <p style="color: var(--text-secondary); font-size: 1.0625rem; line-height: 1.7;">
+        We don't train models on your photos. We don't sell data. Event photos and encodings are automatically purged after 30 days, or instantly when you hit delete. AES-256 encryption at rest. GDPR compliant by design.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="text-align: center;">
+    <h2 style="margin-bottom: 16px;">Ready to find yourself?</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 32px; font-size: 1.0625rem;">No signup. No credit card. Just upload and search.</p>
+    <a href="{{ url_for('views.upload_page') }}" class="btn btn-primary btn-lg">
+      Start Free Scan
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+{% endblock %}

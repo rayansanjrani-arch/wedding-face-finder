@@ -1,0 +1,26 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        run: docker build -t wedding-face-finder:latest .
+
+      - name: Test container starts
+        run: |
+          docker run -d --name test-app -p 5000:5000 wedding-face-finder:latest
+          sleep 10
+          docker ps | grep test-app
+          docker stop test-app
+          docker rm test-app

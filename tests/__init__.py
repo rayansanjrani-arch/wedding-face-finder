@@ -1,0 +1,1 @@
+"""Wedding Face Finder package."""
