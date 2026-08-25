@@ -84,6 +84,8 @@ class Settings(BaseSettings):
     }
 
 
+from functools import lru_cache
+
+@lru_cache
 def get_settings() -> Settings:
-    """Load settings from environment and .env file."""
     return Settings()

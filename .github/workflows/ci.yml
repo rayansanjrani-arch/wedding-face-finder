@@ -34,6 +34,9 @@ jobs:
         run: flake8 wedding_face_finder tests
 
       - name: Run tests with coverage
+        env:
+          SECRET_KEY: test-secret-key-not-for-production
+          ADMIN_PASSWORD_HASH: $2b$04$3EKbDPV3JDkQT2WSb6Rm4ejxR3mYu9YOJiX/AY2QlQXNgS6QY5uOO
         run: pytest --cov=wedding_face_finder --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
