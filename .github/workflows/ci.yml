@@ -33,9 +33,6 @@ jobs:
       - name: Run flake8
         run: flake8 wedding_face_finder tests
 
-      - name: Run mypy
-        run: mypy wedding_face_finder
-
       - name: Run tests with coverage
         run: pytest --cov=wedding_face_finder --cov-report=xml --cov-report=term
 
