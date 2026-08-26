@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     liblapack3 \
     libx11-6 \
     libgtk-3-0 \
-    libboost-python1.74.0 \
+    libboost-python1.83.0 \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
