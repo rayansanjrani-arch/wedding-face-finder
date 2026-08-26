@@ -1,12 +1,32 @@
 FROM python:3.11-slim AS builder
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential cmake libopenblas-dev liblapack-dev libx11-dev libgtk-3-dev libboost-python-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    libopenblas-dev \
+    liblapack-dev \
+    libx11-dev \
+    libgtk-3-dev \
+    libboost-python-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt requirements-dev.txt ./
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 FROM python:3.11-slim AS runtime
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends libopenblas0 liblapack3 libx11-6 libgtk-3-0 libboost-python1.83.0 libgl1 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libopenblas0 \
+    liblapack3 \
+    libx11-6 \
+    libgtk-3-0 \
+    libboost-python1.74.0 \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 COPY --from=builder /root/.local /home/appuser/.local
 ENV PATH=/home/appuser/.local/bin:$PATH
