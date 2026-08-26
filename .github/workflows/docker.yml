@@ -19,7 +19,11 @@ jobs:
 
       - name: Test container starts
         run: |
-          docker run -d --name test-app -p 5000:5000 wedding-face-finder:latest
+          docker run -d --name test-app \
+            -e SECRET_KEY=test-secret-key-not-for-production \
+            -e ADMIN_PASSWORD_HASH='$2b$04$3EKbDPV3JDkQT2WSb6Rm4ejxR3mYu9YOJiX/AY2QlQXNgS6QY5uOO' \
+            -p 5000:5000 \
+            wedding-face-finder:latest
           sleep 10
           docker ps | grep test-app
           docker stop test-app
