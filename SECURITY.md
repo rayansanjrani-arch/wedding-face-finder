@@ -4,23 +4,26 @@
 
 | Version | Supported |
 |---------|-----------|
-| main    | ✅ |
+| `main`  | ✅        |
 
 ## Threat Model
 
 | Threat | Mitigation |
-|--------|-----------|
-| Path traversal | UUID-based storage, validators.py rejects `../` |
-| SQL Injection | SQLAlchemy ORM, parameterized queries |
-| XSS | Jinja2 auto-escaping, CSP headers via Talisman |
-| CSRF | Flask-WTF tokens on all forms |
-| Brute force | Flask-Limiter (5/min on login) |
-| Data exposure | AES-256 encryption, auto-purge after 30 days |
-| File upload abuse | Magic bytes + MIME + size validation |
+|--------|------------|
+| Path traversal | UUID-based filenames; `validators.py` rejects `../` |
+| SQL Injection | SQLAlchemy ORM with parameterized queries |
+| XSS | Jinja2 auto-escaping; CSP + security headers via Flask `after_request` |
+| CSRF | Flask-WTF tokens on all forms; API blueprints exempted for stateless endpoints |
+| Brute force | Flask-Limiter (`login_rate_limit` default: 5/min) |
+| Session hijacking | `HttpOnly`, `Secure`, `SameSite=Lax` cookies |
+| Data exposure | Optional face-encoding encryption (`encryption_key`); manual purge via admin API |
+| File upload abuse | Magic bytes + MIME + `max_content_length` validation |
 
 ## Reporting
 
-Email: security@yourdomain.com
+If you discover a vulnerability, please email:
+
+**rayansanjrani@gmail.com**
 
 Please include:
 - Description
@@ -28,4 +31,4 @@ Please include:
 - Impact assessment
 - Suggested fix (optional)
 
-We respond within 48 hours.
+We aim to respond within 48 hours.
