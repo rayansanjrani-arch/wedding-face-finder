@@ -1,91 +1,89 @@
-"""Pydantic Settings with validation and auto-directory creation."""
+"""Application configuration using Pydantic Settings."""
 
+from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import field_validator, Field
-
-try:
-    from pydantic_settings import BaseSettings
-except ImportError:
-    from pydantic import BaseSettings  # type: ignore[no-redef]
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application settings with security and privacy defaults."""
-
-    # Required secrets
-    secret_key: str = Field(..., min_length=32)
-    admin_password_hash: str
-
-    # Directory paths (auto-created on instantiation)
-    photos_dir: Path = Path("photos")
-    uploads_dir: Path = Path("uploads")
-    thumbnails_dir: Path = Path("thumbnails")
-    data_dir: Path = Path("data")
-    logs_dir: Path = Path("logs")
+    """Application settings loaded from environment variables."""
 
     # Flask
-    flask_env: Literal["development", "testing", "production"] = "production"
-    flask_debug: bool = False
+    secret_key: str = Field(..., min_length=32)
+    flask_env: Literal["development", "production", "testing"] = Field(
+        default="development"
+    )
+    flask_debug: bool = Field(default=False)
+    session_lifetime_minutes: int = Field(default=60)
 
-    # Face engine
-    model: Literal["cnn", "hog"] = "cnn"
-    tolerance: float = Field(default=0.50, ge=0.0, le=1.0)
-    blur_threshold: float = 100.0
+    # Database
+    database_url: str = Field(default="sqlite:///wedding_face_finder.db")
 
-    # Security & privacy
-    encrypt_encodings: bool = False
-    encryption_key: str | None = None
-    audit_searches: bool = True
+    # File storage
+    upload_folder: str = Field(default="uploads")
+    thumbnail_folder: str = Field(default="thumbnails")
+    photos_dir: Path = Field(default=Path("photos"))
+    uploads_dir: Path = Field(default=Path("uploads"))
+    thumbnails_dir: Path = Field(default=Path("thumbnails"))
+    data_dir: Path = Field(default=Path("data"))
+    logs_dir: Path = Field(default=Path("logs"))
+    max_upload_size_mb: int = Field(default=5)
+    max_content_length: int = Field(default=5 * 1024 * 1024)
+
+    # Face recognition
+    tolerance: float = Field(default=0.5)
+    model: Literal["hog", "cnn"] = Field(default="cnn")
+    blur_threshold: float = Field(default=100.0)
+    encrypt_encodings: bool = Field(default=False)
+
+    # Security
+    admin_password_hash: str = Field(...)
+    enable_audit_logging: bool = Field(default=True)
+    audit_searches: bool = Field(default=True)
+    encryption_key: str | None = Field(default=None)
+    rate_limit_storage: str = Field(default="memory")
+    login_rate_limit: str = Field(default="5 per minute")
+
+    # Data retention
     data_retention_days: int = Field(default=30, ge=1)
-    session_lifetime_minutes: int = 60
-    login_rate_limit: str = "5 per minute"
 
-    # Upload & rate limits
-    max_content_length: int = 5 * 1024 * 1024
-    rate_limit_storage: str = "memory"
+    # Pagination
+    default_page_size: int = Field(default=20)
+    max_page_size: int = Field(default=100)
 
-    @field_validator("secret_key")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    @field_validator("tolerance")
     @classmethod
-    def _validate_secret_key(cls, v: str) -> str:
-        if len(v) < 32:
-            raise ValueError("secret_key must be at least 32 characters")
+    def _validate_tolerance(cls, v: float) -> float:
+        if not 0.0 <= v <= 1.0:
+            raise ValueError("Tolerance must be between 0.0 and 1.0")
         return v
 
-    @field_validator(
-        "photos_dir",
-        "uploads_dir",
-        "thumbnails_dir",
-        "data_dir",
-        "logs_dir",
-        mode="before",
-    )
-    @classmethod
-    def _coerce_path(cls, v: str | Path) -> Path:
-        return Path(v)
+    @model_validator(mode="after")
+    def create_directories(self) -> "Settings":
+        """Ensure all configured directories exist."""
+        for attr in (
+            "photos_dir",
+            "uploads_dir",
+            "thumbnails_dir",
+            "data_dir",
+            "logs_dir",
+        ):
+            path = getattr(self, attr)
+            if path is not None:
+                path.mkdir(parents=True, exist_ok=True)
+        return self
 
-    @field_validator(
-        "photos_dir",
-        "uploads_dir",
-        "thumbnails_dir",
-        "data_dir",
-        "logs_dir",
-    )
-    @classmethod
-    def _create_directory(cls, v: Path) -> Path:
-        v.mkdir(parents=True, exist_ok=True)
-        return v
-
-    model_config = {
-        "env_file": ".env",
-        "env_file_encoding": "utf-8",
-        "extra": "ignore",
-    }
-
-
-from functools import lru_cache
 
 @lru_cache
 def get_settings() -> Settings:
+    """Return cached Settings instance."""
     return Settings()
